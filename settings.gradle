@@ -1,0 +1,2 @@
+include ':demo', ':IdeaRecyclerview'
+rootProject.name='IdeaRecyclerView'
