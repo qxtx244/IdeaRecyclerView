@@ -1,0 +1,39 @@
+apply plugin: 'com.android.library'
+//apply plugin: 'com.novoda.bintray-release'
+
+android {
+    compileSdkVersion compileSdkVer
+
+    defaultConfig {
+        minSdkVersion minSdkVer
+        targetSdkVersion targetSdkVer
+        versionCode appVersionCode
+        versionName appVersionName
+
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation appcompat_v7
+
+    implementation 'com.android.support:recyclerview-v7:' + buildVersion
+}
+
+//publish {
+//    userOrg = '<userName>'    			//bintray.com用户名
+//    groupId = '<jcenterPath>'   		//jcenter上的路径
+//    artifactId = '<uri>'    			//自己的maven上添加的包名，可包含大写
+//    publishVersion = '<versionName>'    //版本号
+//    desc = '<description>'    			//描述
+//    website = '<website>'    			//网站，不重要
+//}

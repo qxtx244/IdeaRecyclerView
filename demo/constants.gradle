@@ -1,0 +1,4 @@
+ext {
+    modVersionCode = 1
+    modVersionName = '1.0.0'
+}

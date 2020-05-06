@@ -1,0 +1,13 @@
+ext {
+    compileSdkVer = 28
+    minSdkVersion = 21
+    minSdkVer = 21
+    targetSdkVer = 28
+
+    appVersionCode = 3
+    appVersionName = '3.0.0'
+
+    buildVersion = '28.0.0'
+
+    appcompat_v7 = 'com.android.support:appcompat-v7:' + buildVersion
+}
