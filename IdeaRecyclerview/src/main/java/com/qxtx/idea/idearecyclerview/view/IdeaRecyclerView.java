@@ -99,16 +99,18 @@ public class IdeaRecyclerView<D> extends RecyclerView implements IRecyclerView<D
      */
     @Override
     public void setLayoutManager(final LayoutManager layout) {
-        if (mImpl == null) {
-            super.setLayoutManager(layout);
-        } else {
-            mImpl.setListStyle(new IStyle() {
+        LayoutManager layoutManager = layout;
+        if (mImpl != null) {
+            IStyle style = new IStyle() {
                 @Override
                 public LayoutManager getLayoutManager() {
                     return layout;
                 }
-            });
+            };
+            mImpl.mStyle = style;
+            layoutManager = style.getLayoutManager();
         }
+        super.setLayoutManager(layoutManager);
     }
 
     /**
