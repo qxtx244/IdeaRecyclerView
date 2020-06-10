@@ -20,6 +20,8 @@ import java.util.List;
 
 public class DemoActivity extends AppCompatActivity {
 
+    private IdeaRecyclerView<String> rvList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,9 +32,10 @@ public class DemoActivity extends AppCompatActivity {
             listData.add("item " + i);
         }
 
-        IdeaRecyclerView<String> rvList = findViewById(R.id.rvList);
+        rvList = findViewById(R.id.rvList);
         IdeaRecyclerView<String>.Impl<String> impl = rvList.option(new TestLayoutFactory())
-                .setListStyle(new Linear(this, Linear.VER));
+                .setListStyle(new Linear(this, Linear.VER))
+                .setItemAction(new TestItemAction());
 
         Button btnAddListData = findViewById(R.id.btnAddListData);
         btnAddListData.setOnClickListener(v ->  {
@@ -41,7 +44,22 @@ public class DemoActivity extends AppCompatActivity {
 
         Button btnChangeItemAction = findViewById(R.id.btnAddItemAction);
         btnChangeItemAction.setOnClickListener(v ->  {
-            impl.setItemAction(new TestItemAction());
+            rvList.addItem(3, "拥有独立行为描述的item", new ItemAction<String>() {
+                @Override
+                public void onItemAction(@NonNull IdeaViewHolder holder, @Nullable List<String> data, int itemPos) {
+                    if (data == null) {
+                        return ;
+                    }
+
+                    TextView tvText = (TextView) holder.getViewById(R.id.tvItemText);
+                    tvText.setText(data.get(itemPos));
+
+                    holder.setItemListener((View.OnClickListener) v -> {
+                        int pos = rvList.getChildAdapterPosition(v);
+                        IdeaRvLog.TEST("特殊：点击了%s项", pos);
+                    });
+                }
+            });
         });
     }
 
@@ -56,9 +74,12 @@ public class DemoActivity extends AppCompatActivity {
             TextView tvText = (TextView) holder.getViewById(R.id.tvItemText);
             tvText.setText(data.get(itemPos));
 
-            holder.setItemListener((View.OnClickListener) v ->
-                    IdeaRvLog.TEST("点击了%s项", itemPos));
-        }    }
+            holder.setItemListener((View.OnClickListener) v -> {
+                int pos = rvList.getChildAdapterPosition(v);
+                IdeaRvLog.TEST("点击了%s项", pos);
+            });
+        }
+    }
 
     private final class TestLayoutFactory implements ItemLayoutFactory {
 

@@ -11,10 +11,13 @@ import android.view.ViewGroup;
 
 import com.qxtx.idea.idearecyclerview.item.ItemAction;
 import com.qxtx.idea.idearecyclerview.item.ItemLayoutFactory;
+import com.qxtx.idea.idearecyclerview.tool.IdeaRvLog;
 import com.qxtx.idea.idearecyclerview.view.IdeaRecyclerView;
 import com.qxtx.idea.idearecyclerview.viewHolder.IdeaViewHolder;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -27,20 +30,18 @@ import java.util.List;
  *   此适配器可以适配大多数{@link RecyclerView}
  * @param <D> 数据集类型
  *
- * 一些开源的RecyclerView的LayoutManager：
- * 1、FanLayoutManager：https://github.com/Cleveroad/FanLayoutManager 扇叶转动
- * 2、CarouselLayoutManager：https://github.com/Azoft/CarouselLayoutManager 传送带（卡片轮播）效果
- * 3、ChipsLayoutManager：https://github.com/BelooS/ChipsLayoutManager 流式布局效果（标签云）
- * 4、HiveLayoutManager：https://github.com/Chacojack/HiveLayoutManager 蜂巢效果（国人作品）
- * 5、vLayout：https://github.com/alibaba/vlayout 布局混排效果（天猫app所使用）
- * 6、flexbox-layout https://github.com/google/flexbox-layout flexbox效果（谷歌的东西，原本不支持recyclerView）
- * 7、LondonEyeLayoutManager https://github.com/danylovolokh/LondonEyeLayoutManager 环形菜单效果
- *
  * </pre>
  */
 public final class IdeaAdapter<D>
-        extends IdeaRecyclerView.Adapter<IdeaViewHolder>
-        implements IAdapter<D> {
+        extends IdeaRecyclerView.Adapter<IdeaViewHolder> implements IAdapter<D> {
+
+    /**
+     * 拥有独立行为描述的item对象集。当某个item被绑定了一个独立的行为描述，全局行为描述将对它无效。
+     * 当列表项发生了增删，需要同步更新这个数据集
+     * [String] item在列表中的唯一识别标识，带已有标识的项被添加进来，将会替换掉已存在的相同标识项
+     * [ItemAction<D>] item绑定的行为描述
+     */
+    private final HashMap<D, ItemAction<D>> mSpecItemActionMap;
 
     /**
      * 外部宿主的上下文
@@ -64,7 +65,7 @@ public final class IdeaAdapter<D>
      * @see #setItemAction(ItemAction)
      * @see #onBindViewHolder(IdeaViewHolder, int)
      */
-    private ItemAction<D> mItemAction;
+    private ItemAction<D> mItemActionGlobal;
 
     /** 非法的layoutId */
     private final int NO_LAYOUT_ID = Integer.MIN_VALUE;
@@ -78,16 +79,17 @@ public final class IdeaAdapter<D>
         this.mContext = new WeakReference<>(context);
         mLayoutFactory = layoutFactory;
         mListData = null;
+        mSpecItemActionMap = new HashMap<>();
     }
 
     /** 当item的行为描述被改变，adapter自动刷新一次。允许动态配置 */
     @Override
     public void setItemAction(ItemAction<D> action) {
-        if (mItemAction == action) {
+        if (mItemActionGlobal == action) {
             return ;
         }
 
-        mItemAction = action;
+        mItemActionGlobal = action;
         notifyDataSetChanged();
     }
 
@@ -139,14 +141,21 @@ public final class IdeaAdapter<D>
     }
 
     @Override
-    public void onBindViewHolder(@NonNull IdeaViewHolder viewHolder, int itemPos) {
+    public void onBindViewHolder(@NonNull IdeaViewHolder viewHolder, int pos) {
         if (mListData == null || mListData.size() == 0) {
             logI("列表没有数据!");
             return ;
         }
 
-        if (mItemAction != null) {
-            mItemAction.onItemAction(viewHolder, mListData, itemPos);
+        D data = mListData.get(pos);
+        //如果对应的列表项携带独立的行为描述，则忽略掉全局行为描述。
+        ItemAction<D> action = mItemActionGlobal;
+        if (mSpecItemActionMap.containsKey(data)) {
+            action = mSpecItemActionMap.get(data);
+        }
+
+        if (action != null) {
+            action.onItemAction(viewHolder, mListData, pos);
         }
     }
 
@@ -185,6 +194,53 @@ public final class IdeaAdapter<D>
     @Override
     public int getItemCount() {
         return mListData == null ? 0 : mListData.size();
+    }
+
+    public void addItem(int pos, D data, @Nullable ItemAction<D> action) {
+        if (pos < 0) {
+            IdeaRvLog.I("添加列表项失败，非法的列表目标位置");
+            return ;
+        }
+
+        if (mListData == null) {
+            mListData = new ArrayList<>();
+        }
+
+        pos = pos > mListData.size() ? mListData.size() : pos;
+
+        if (data == null && action != null) {
+            IdeaRvLog.I("添加列表项失败，如果指定列表项使用独立的行为描述，必须携带非空数据");
+            return ;
+        }
+
+        mSpecItemActionMap.put(data, action);
+
+        mListData.add(pos, data);
+        notifyItemInserted(pos);
+    }
+
+    public void removeItem(int pos) {
+        if (mListData == null) {
+            return ;
+        }
+
+        if (pos < 0 || pos > mListData.size()) {
+            return ;
+        }
+
+        mListData.remove(pos);
+        mSpecItemActionMap.remove(mListData.get(pos));
+        notifyItemRemoved(pos);
+    }
+
+    @Override
+    public void removeAll() {
+        if (mListData == null || mListData.size() == 0) {
+            return ;
+        }
+
+        mListData.clear();
+        notifyDataSetChanged();
     }
 
     private void logI(@NonNull String msg) {

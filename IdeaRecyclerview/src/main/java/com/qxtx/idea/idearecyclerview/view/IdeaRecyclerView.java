@@ -6,13 +6,19 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Pair;
 
+import com.qxtx.idea.idearecyclerview.adapter.IAdapter;
 import com.qxtx.idea.idearecyclerview.adapter.IdeaAdapter;
 import com.qxtx.idea.idearecyclerview.item.ItemAction;
 import com.qxtx.idea.idearecyclerview.item.ItemLayoutFactory;
 import com.qxtx.idea.idearecyclerview.layoutmanager.IStyle;
 import com.qxtx.idea.idearecyclerview.tool.IdeaRvLog;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -22,6 +28,15 @@ import java.util.List;
  * @param <D> 数据集类型
  *
  * 只能存在一条路径去配置，即通过一个固定的方法作为入口，创建内部实现类，由这个实现类去完成真正的配置工作
+ *
+ * 一些开源的RecyclerView的LayoutManager：
+ *      1、FanLayoutManager：https://github.com/Cleveroad/FanLayoutManager 扇叶转动
+ *      2、CarouselLayoutManager：https://github.com/Azoft/CarouselLayoutManager 传送带（卡片轮播）效果
+ *      3、ChipsLayoutManager：https://github.com/BelooS/ChipsLayoutManager 流式布局效果（标签云）
+ *      4、HiveLayoutManager：https://github.com/Chacojack/HiveLayoutManager 蜂巢效果（国人作品）
+ *      5、vLayout：https://github.com/alibaba/vlayout 布局混排效果（天猫app所使用）
+ *      6、flexbox-layout https://github.com/google/flexbox-layout flexbox效果（谷歌的东西，原本不支持recyclerView）
+ *      7、LondonEyeLayoutManager https://github.com/danylovolokh/LondonEyeLayoutManager 环形菜单效果
  */
 public class IdeaRecyclerView<D> extends RecyclerView implements IRecyclerView<D> {
 
@@ -59,12 +74,27 @@ public class IdeaRecyclerView<D> extends RecyclerView implements IRecyclerView<D
     }
 
     @Override
+    public void addItem(int pos, D data, ItemAction<D> action) {
+        mImpl.addItem(pos, data, action);
+    }
+
+    @Override
+    public void removeItem(int pos) {
+        mImpl.removeItem(pos);
+    }
+
+    @Override
     public List<D> getListData() {
-        IdeaAdapter<D> adapter = (IdeaAdapter<D>)getAdapter();
-        if (adapter == null) {
-            return null;
+        return mImpl.getListData();
+    }
+
+    @Override
+    public IAdapter<D> getIdeaAdapter() {
+        Adapter adapter = getAdapter();
+        if ((adapter instanceof IAdapter)) {
+            return (IAdapter<D>) adapter;
         }
-        return adapter.getListData();
+        return null;
     }
 
     @UiThread
@@ -89,8 +119,8 @@ public class IdeaRecyclerView<D> extends RecyclerView implements IRecyclerView<D
      */
     @UiThread
     @Override
-    public void removeAllItem() {
-        mImpl.setListData(null);
+    public void removeAll() {
+        mImpl.removeAll();
     }
 
     /**
@@ -136,6 +166,10 @@ public class IdeaRecyclerView<D> extends RecyclerView implements IRecyclerView<D
 
         private Impl(@NonNull ItemLayoutFactory factory) {
             mStyle = null;
+
+            //默认不使用列表项动画效果
+            setItemAnimator(null);
+
             mAdapter = new IdeaAdapter<V>(mContext, factory);
             setAdapter(mAdapter);
         }
@@ -174,6 +208,22 @@ public class IdeaRecyclerView<D> extends RecyclerView implements IRecyclerView<D
          */
         public IStyle getListStyle() {
             return mStyle;
+        }
+
+        private List<V> getListData() {
+            return mAdapter.getListData();
+        }
+
+        private void addItem(int pos, @Nullable V data, @Nullable ItemAction<V> action) {
+            mAdapter.addItem(pos, data, action);
+        }
+
+        private void removeItem(int pos) {
+            mAdapter.removeItem(pos);
+        }
+
+        private void removeAll() {
+            mAdapter.removeAll();
         }
     }
 
