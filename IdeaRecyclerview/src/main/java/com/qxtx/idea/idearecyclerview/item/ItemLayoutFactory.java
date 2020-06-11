@@ -7,6 +7,8 @@ import android.support.annotation.LayoutRes;
  * @date 2020/4/18 18:22
  * Description: 支持多样式item布局工厂类，使用此类配合{@link com.qxtx.idea.idearecyclerview.view.IRecyclerView}
  *   完成复杂item布局的设计。
+ *
+ * @see DefaultLayoutFactory
  */
 public interface ItemLayoutFactory {
 

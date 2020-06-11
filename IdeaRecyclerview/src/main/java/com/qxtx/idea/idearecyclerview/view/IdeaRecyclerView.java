@@ -6,9 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Pair;
 
 import com.qxtx.idea.idearecyclerview.adapter.IAdapter;
 import com.qxtx.idea.idearecyclerview.adapter.IdeaAdapter;
@@ -17,8 +15,6 @@ import com.qxtx.idea.idearecyclerview.item.ItemLayoutFactory;
 import com.qxtx.idea.idearecyclerview.layoutmanager.IStyle;
 import com.qxtx.idea.idearecyclerview.tool.IdeaRvLog;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -74,8 +70,18 @@ public class IdeaRecyclerView<D> extends RecyclerView implements IRecyclerView<D
     }
 
     @Override
-    public void addItem(int pos, D data, ItemAction<D> action) {
-        mImpl.addItem(pos, data, action);
+    public void addItem(int pos, D data) {
+        addItem(pos, data, null);
+    }
+
+    @Override
+    public void addItem(int pos, D data, @Nullable ItemAction<D> action) {
+        addItem(pos, data, IdeaAdapter.NO_LAYOUT_ID, action);
+    }
+
+    @Override
+    public void addItem(int pos, D data, int layoutId, ItemAction<D> action) {
+        mImpl.addItem(pos, data, layoutId, action);
     }
 
     @Override
@@ -214,8 +220,16 @@ public class IdeaRecyclerView<D> extends RecyclerView implements IRecyclerView<D
             return mAdapter.getListData();
         }
 
-        private void addItem(int pos, @Nullable V data, @Nullable ItemAction<V> action) {
-            mAdapter.addItem(pos, data, action);
+        private void addItem(int pos, V data) {
+            addItem(pos, data, null);
+        }
+
+        private void addItem(int pos, V data, @Nullable ItemAction<V> action) {
+            addItem(pos, data, IdeaAdapter.NO_LAYOUT_ID, action);
+        }
+
+        private void addItem(int pos, V data, int layoutId, ItemAction<V> action) {
+            mAdapter.addItem(pos, data, layoutId, action);
         }
 
         private void removeItem(int pos) {

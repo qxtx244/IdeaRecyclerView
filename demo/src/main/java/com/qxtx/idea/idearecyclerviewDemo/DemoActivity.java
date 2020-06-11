@@ -22,6 +22,8 @@ public class DemoActivity extends AppCompatActivity {
 
     private IdeaRecyclerView<String> rvList;
 
+    private int specItemSeq;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,21 +46,14 @@ public class DemoActivity extends AppCompatActivity {
 
         Button btnChangeItemAction = findViewById(R.id.btnAddItemAction);
         btnChangeItemAction.setOnClickListener(v ->  {
-            rvList.addItem(3, "拥有独立行为描述的item", new ItemAction<String>() {
-                @Override
-                public void onItemAction(@NonNull IdeaViewHolder holder, @Nullable List<String> data, int itemPos) {
-                    if (data == null) {
-                        return ;
-                    }
-
-                    TextView tvText = (TextView) holder.getViewById(R.id.tvItemText);
-                    tvText.setText(data.get(itemPos));
-
-                    holder.setItemListener((View.OnClickListener) v -> {
-                        int pos = rvList.getChildAdapterPosition(v);
-                        IdeaRvLog.TEST("特殊：点击了%s项", pos);
-                    });
+            specItemSeq++;
+            rvList.addItem(3, "特殊项" + specItemSeq, R.layout.spec_item, (holder, data, itemPos) -> {
+                if (data == null) {
+                    return ;
                 }
+
+                TextView tvText = (TextView) holder.getViewById(R.id.tvText);
+                tvText.setText(data.get(itemPos));
             });
         });
     }

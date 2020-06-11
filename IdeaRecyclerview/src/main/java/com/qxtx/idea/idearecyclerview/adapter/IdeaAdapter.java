@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,12 +37,12 @@ public final class IdeaAdapter<D>
         extends IdeaRecyclerView.Adapter<IdeaViewHolder> implements IAdapter<D> {
 
     /**
-     * 拥有独立行为描述的item对象集。当某个item被绑定了一个独立的行为描述，全局行为描述将对它无效。
+     * 拥有独立描述的列表项对象集。当某个列表项被绑定了一个独立的描述，全局描述将对它无效。
      * 当列表项发生了增删，需要同步更新这个数据集
-     * [String] item在列表中的唯一识别标识，带已有标识的项被添加进来，将会替换掉已存在的相同标识项
-     * [ItemAction<D>] item绑定的行为描述
+     * [D] 以列表项的数据对象作为列表项在列表中的唯一标识，带已有标识的项被添加进来，将会替换掉已存在的相同标识项
+     * [Integer, ItemAction] 列表项绑定的描述对象，Integer为列表项的布局id，ItemAction为列表项的行为描述对象
      */
-    private final HashMap<D, ItemAction<D>> mSpecItemActionMap;
+    private final HashMap<D, Pair<Integer, ItemAction<D>>> mSpecItemActionMap;
 
     /**
      * 外部宿主的上下文
@@ -68,7 +69,7 @@ public final class IdeaAdapter<D>
     private ItemAction<D> mItemActionGlobal;
 
     /** 非法的layoutId */
-    private final int NO_LAYOUT_ID = Integer.MIN_VALUE;
+    public final static int NO_LAYOUT_ID = Integer.MIN_VALUE;
 
     /**
      * 构造方法
@@ -151,7 +152,11 @@ public final class IdeaAdapter<D>
         //如果对应的列表项携带独立的行为描述，则忽略掉全局行为描述。
         ItemAction<D> action = mItemActionGlobal;
         if (mSpecItemActionMap.containsKey(data)) {
-            action = mSpecItemActionMap.get(data);
+            action = null;
+            Pair<Integer, ItemAction<D>> pair = mSpecItemActionMap.get(data);
+            if (pair != null) {
+                action = pair.second;
+            }
         }
 
         if (action != null) {
@@ -160,7 +165,8 @@ public final class IdeaAdapter<D>
     }
 
     /**
-     * 返回item的viewType，根据源码注释，这个viewType应该具备唯一找到对应item的能力，因此，这个viewType可以是item的layoutId
+     * 返回item的viewType，根据源码注释，这个viewType应该具备唯一找到对应item的能力，因此，这个viewType通常是item的layoutId
+     * 如果对应位置为一个拥有独立的行为描述的列表项，则优先使用功能它自己的行为描述（包括布局），而忽略掉全局行为描述
      * @param position position to query
      * @return viewType
      *
@@ -172,7 +178,8 @@ public final class IdeaAdapter<D>
             return super.getItemViewType(position);
         }
 
-        return mLayoutFactory == null ? NO_LAYOUT_ID : mLayoutFactory.getLayoutId(position);
+        int layoutId = (int)getItemId(position);
+        return layoutId;
     }
 
     /**
@@ -185,7 +192,18 @@ public final class IdeaAdapter<D>
             return super.getItemId(position);
         }
 
-        return mLayoutFactory.getLayoutId(position);
+        D itemData = mListData.get(position);
+        boolean isSpecItem = mSpecItemActionMap.containsKey(itemData);
+        if (isSpecItem) {
+            int layoutId = NO_LAYOUT_ID;
+            Pair<Integer, ItemAction<D>> pair = mSpecItemActionMap.get(itemData);
+            if (pair != null) {
+                layoutId = pair.first;
+            }
+            return layoutId;
+        }
+
+        return mLayoutFactory == null ? NO_LAYOUT_ID : mLayoutFactory.getLayoutId(position);
     }
 
     /** 获取item的个数，
@@ -196,7 +214,18 @@ public final class IdeaAdapter<D>
         return mListData == null ? 0 : mListData.size();
     }
 
+    @Override
+    public void addItem(int pos, D data) {
+        addItem(pos, data, null);
+    }
+
+    @Override
     public void addItem(int pos, D data, @Nullable ItemAction<D> action) {
+        addItem(pos, data, NO_LAYOUT_ID, action);
+    }
+
+    @Override
+    public void addItem(int pos, D data, int layoutId, @Nullable ItemAction<D> action) {
         if (pos < 0) {
             IdeaRvLog.I("添加列表项失败，非法的列表目标位置");
             return ;
@@ -208,12 +237,19 @@ public final class IdeaAdapter<D>
 
         pos = pos > mListData.size() ? mListData.size() : pos;
 
+        //参数控制
         if (data == null && action != null) {
             IdeaRvLog.I("添加列表项失败，如果指定列表项使用独立的行为描述，必须携带非空数据");
             return ;
         }
 
-        mSpecItemActionMap.put(data, action);
+        //参数控制
+        if (layoutId > 0 && action == null) {
+            IdeaRvLog.I("添加列表项失败，存在独立布局id的列表项，必须携带有效且独立的行为描述");
+            return ;
+        }
+
+        mSpecItemActionMap.put(data, new Pair<>(layoutId, action));
 
         mListData.add(pos, data);
         notifyItemInserted(pos);
@@ -245,9 +281,5 @@ public final class IdeaAdapter<D>
 
     private void logI(@NonNull String msg) {
         Log.i(getClass().getSimpleName(), msg);
-    }
-
-    private void logE(@NonNull String msg) {
-        Log.e(getClass().getSimpleName(), msg);
     }
 }
