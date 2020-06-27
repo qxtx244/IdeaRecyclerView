@@ -1,30 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!--  1. item布局（列表使用单一子项样式）
-          3. 列表方向
-          5. item间的分隔布局
-          6.(过度边缘动画anim.xml)
-          7. 首尾item
-          8. 强制子项背景
-      -->
     <declare-styleable name="IdeaRecyclerView">
-        <attr name="item" format="reference"/>
-        <!-- 子项之间的分隔布局（如果没有布局，则为空白间隙） -->
-        <attr name="itemDecoration" format="reference|dimension"/>
+        <!-- 默认的item布局 -->
+<!--        <attr name="itemLayout" format="reference"/>-->
+<!--        &lt;!&ndash; 默认的列表项样式 &ndash;&gt;-->
+<!--        <attr name="listStyle" format="enum">-->
+<!--            <enum name="linear" value="1"/>-->
+<!--            <enum name="grid" value="2"/>-->
+<!--            <enum name="staggeredGrid" value="3"/>-->
+<!--        </attr>-->
         <!-- 边缘过度动画，即过度滑动时触发的边缘动画（如果为true则使用默认动画） -->
-        <attr name="edgeEffectAnim" format="reference|boolean"/>
-        <!-- 列表方向 -->
-        <attr name="orientation" format="flags">
-            <flag name="vertical" value="0x1"/>
-            <flag name="horizontal" value="0x2"/>
-            <flag name="reverse" value="0x3"/>
-        </attr>
-        <!-- 首项布局 -->
-        <attr name="headerItem" format="reference"/>
-        <!-- 尾项布局 -->
-        <attr name="footerItem" format="reference"/>
-        <!-- 如果子项未设置背景，则使用默认背景 -->
-        <attr name="autoItemBackground" format="reference|color"/>
+<!--        <attr name="edgeEffectAnim" format="reference|boolean"/>-->
     </declare-styleable>
 </resources>

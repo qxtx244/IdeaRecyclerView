@@ -2,19 +2,28 @@ package com.qxtx.idea.idearecyclerview.view;
 
 import android.content.Context;
 import android.os.Looper;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
+import com.qxtx.idea.idearecyclerview.R;
 import com.qxtx.idea.idearecyclerview.adapter.IAdapter;
 import com.qxtx.idea.idearecyclerview.adapter.IdeaAdapter;
+import com.qxtx.idea.idearecyclerview.item.DefaultItemAction;
 import com.qxtx.idea.idearecyclerview.item.ItemAction;
 import com.qxtx.idea.idearecyclerview.item.ItemLayoutFactory;
+import com.qxtx.idea.idearecyclerview.layoutmanager.GridStyle;
 import com.qxtx.idea.idearecyclerview.layoutmanager.IStyle;
 import com.qxtx.idea.idearecyclerview.tool.IdeaRvLog;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /**
@@ -36,36 +45,43 @@ import java.util.List;
  */
 public class IdeaRecyclerView<D> extends RecyclerView implements IRecyclerView<D> {
 
+    private PreConfig preConfig;
+
     private Impl<D> mImpl;
 
     private Context mContext;
 
-    public IdeaRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
-        init(context);
-    }
-
     public IdeaRecyclerView(@NonNull Context context) {
         super(context);
-        init(context);
+        init(context, null, -1);
+    }
+
+    public IdeaRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, -1);
     }
 
     public IdeaRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init(context);
+        init(context, attrs, defStyle);
     }
 
     /**
-     * 在构造方法中做初始化操作
+     * 在构造方法中做初始化操作，获取xml中预设的一些属性
      * @see IdeaRecyclerView#IdeaRecyclerView
      */
-    private void init(@NonNull Context context) {
+    private void init(@NonNull Context context, @Nullable AttributeSet attrs, int defStyle) {
         mContext = context;
+        if (attrs == null) {
+            return ;
+        }
     }
 
     /** 对列表进行参数配置 */
     public Impl<D> option(@NonNull ItemLayoutFactory factory) {
-        mImpl = new Impl<>(factory);
+        if (mImpl == null) {
+            mImpl = new Impl<>(factory);
+        }
+
         return mImpl;
     }
 
@@ -158,6 +174,15 @@ public class IdeaRecyclerView<D> extends RecyclerView implements IRecyclerView<D
         super.setAdapter(adapter);
     }
 
+    private boolean isUiThread() {
+        boolean ret = Looper.myLooper() != null && Looper.myLooper() == Looper.getMainLooper();
+        if (!ret) {
+            IdeaRvLog.E("无法在非主线程中操作列表界面！");
+        }
+
+        return ret;
+    }
+
     /**
      * 内部配置类
      * @param <V> 数据集类型，实际上等效于{@link #<D>}，仅仅是为了方便区分两者
@@ -241,12 +266,43 @@ public class IdeaRecyclerView<D> extends RecyclerView implements IRecyclerView<D
         }
     }
 
-    private boolean isUiThread() {
-        boolean ret = Looper.myLooper() != null && Looper.myLooper() == Looper.getMainLooper();
-        if (!ret) {
-            IdeaRvLog.E("无法在非主线程中操作列表界面！");
+    /**
+     * xml中预设的属性
+     * @see #init(Context, AttributeSet, int)
+     */
+    private static final class PreConfig {
+
+        @Retention(RetentionPolicy.SOURCE)
+        private @interface ListStyle {
+            int STYLE_LINEAR = 1;
+            int STYLE_GRID = 2;
+            int STYLE_STAGGERED_GRID = 3;
         }
 
-        return ret;
+        /** item布局id */
+        private @LayoutRes int itemLayoutId;
+
+        /** 列表样式 */
+        private @ListStyle int listStyle;
+
+//        /** 边缘效果动画 */
+//        private int edgeEffectAnim;
+
+
+        public int getItemLayoutId() {
+            return itemLayoutId;
+        }
+
+        public void setItemLayoutId(int itemLayoutId) {
+            this.itemLayoutId = itemLayoutId;
+        }
+
+        public int getListStyle() {
+            return listStyle;
+        }
+
+        public void setListStyle(int listStyle) {
+            this.listStyle = listStyle;
+        }
     }
 }

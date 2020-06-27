@@ -15,7 +15,7 @@ import java.lang.ref.WeakReference;
  * <p>
  *
  * @author QXTX-WIN
- * Description: 列表风格基类，建立{@link IStyle}的实现类继承此基类，而不是直接实现{@link IStyle}接口
+ * Description: 列表风格基类，建议{@link IStyle}的实现类继承此基类，而不是直接实现{@link IStyle}接口。默认是垂直方向的线性布局样式
  */
 public abstract class BaseStyle implements IStyle {
 
@@ -41,7 +41,7 @@ public abstract class BaseStyle implements IStyle {
 
     protected BaseStyle(@NonNull Context context) {
         mContextWeak = new WeakReference<>(context);
-        mLayoutManager = null;
+        mLayoutManager = new LinearLayoutManager(context, VER, false);
     }
 
     @Override

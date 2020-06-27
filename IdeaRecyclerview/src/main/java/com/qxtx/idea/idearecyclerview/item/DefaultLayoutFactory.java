@@ -1,7 +1,6 @@
 package com.qxtx.idea.idearecyclerview.item;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.qxtx.idea.idearecyclerview.adapter.IdeaAdapter;
 

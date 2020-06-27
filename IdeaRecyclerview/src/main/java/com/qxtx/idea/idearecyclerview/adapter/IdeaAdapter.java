@@ -26,21 +26,20 @@ import java.util.List;
  * @date 2020/4/15 23:34
  *
  * <pre>
- *
- * Description: {@link com.qxtx.idea.idearecyclerview.view.IRecyclerView} 的adapter
+ * Description: {@link com.qxtx.idea.idearecyclerview.view.IRecyclerView} 的适配器
  *   此适配器可以适配大多数{@link RecyclerView}
  * @param <D> 数据集类型
  *
  * </pre>
  */
-public final class IdeaAdapter<D>
+public final class IdeaAdapter<D> 
         extends IdeaRecyclerView.Adapter<IdeaViewHolder> implements IAdapter<D> {
 
     /**
-     * 拥有独立描述的列表项对象集。当某个列表项被绑定了一个独立的描述，全局描述将对它无效。
-     * 当列表项发生了增删，需要同步更新这个数据集
-     * [D] 以列表项的数据对象作为列表项在列表中的唯一标识，带已有标识的项被添加进来，将会替换掉已存在的相同标识项
-     * [Integer, ItemAction] 列表项绑定的描述对象，Integer为列表项的布局id，ItemAction为列表项的行为描述对象
+     * 拥有独立描述的item对象集。当某个item被绑定了一个独立的描述，全局描述将对它无效。
+     * 当item发生了增删，需要同步更新这个数据集
+     * [D] 以item的数据对象作为item在列表中的唯一标识，带已有标识的项被添加进来，将会替换掉已存在的相同标识项
+     * [Integer, ItemAction] item绑定的描述对象，Integer为item的布局id，ItemAction为item的行为描述对象
      */
     private final HashMap<D, Pair<Integer, ItemAction<D>>> mSpecItemActionMap;
 
@@ -50,7 +49,7 @@ public final class IdeaAdapter<D>
     private WeakReference<Context> mContext;
 
     /**
-     * 列表项的布局配置类，定义了列表中每一项的布局方案
+     * item的布局配置类，定义了列表中每一项的布局方案
      */
     private ItemLayoutFactory mLayoutFactory;
 
@@ -74,7 +73,7 @@ public final class IdeaAdapter<D>
     /**
      * 构造方法
      * @param context 外部宿主上下文
-     * @param layoutFactory 列表项的布局配置类，定义了列表中每一项的布局方案
+     * @param layoutFactory item的布局配置类，定义了列表中每一项的布局方案
      */
     public IdeaAdapter(@NonNull Context context, @NonNull ItemLayoutFactory layoutFactory) {
         this.mContext = new WeakReference<>(context);
@@ -149,7 +148,7 @@ public final class IdeaAdapter<D>
         }
 
         D data = mListData.get(pos);
-        //如果对应的列表项携带独立的行为描述，则忽略掉全局行为描述。
+        //如果对应的item携带独立的行为描述，则忽略掉全局行为描述。
         ItemAction<D> action = mItemActionGlobal;
         if (mSpecItemActionMap.containsKey(data)) {
             action = null;
@@ -160,13 +159,13 @@ public final class IdeaAdapter<D>
         }
 
         if (action != null) {
-            action.onItemAction(viewHolder, mListData, pos);
+            action.onItemBind(viewHolder, mListData, pos);
         }
     }
 
     /**
      * 返回item的viewType，根据源码注释，这个viewType应该具备唯一找到对应item的能力，因此，这个viewType通常是item的layoutId
-     * 如果对应位置为一个拥有独立的行为描述的列表项，则优先使用功能它自己的行为描述（包括布局），而忽略掉全局行为描述
+     * 如果对应位置为一个拥有独立的行为描述的item，则优先使用功能它自己的行为描述（包括布局），而忽略掉全局行为描述
      * @param position position to query
      * @return viewType
      *
@@ -227,7 +226,7 @@ public final class IdeaAdapter<D>
     @Override
     public void addItem(int pos, D data, int layoutId, @Nullable ItemAction<D> action) {
         if (pos < 0) {
-            IdeaRvLog.I("添加列表项失败，非法的列表目标位置");
+            IdeaRvLog.I("添加item失败，非法的列表目标位置");
             return ;
         }
 
@@ -239,13 +238,13 @@ public final class IdeaAdapter<D>
 
         //参数控制
         if (data == null && action != null) {
-            IdeaRvLog.I("添加列表项失败，如果指定列表项使用独立的行为描述，必须携带非空数据");
+            IdeaRvLog.I("添加item失败，如果指定item使用独立的行为描述，必须携带非空数据");
             return ;
         }
 
         //参数控制
         if (layoutId > 0 && action == null) {
-            IdeaRvLog.I("添加列表项失败，存在独立布局id的列表项，必须携带有效且独立的行为描述");
+            IdeaRvLog.I("添加item失败，存在独立布局id的item，必须携带有效且独立的行为描述");
             return ;
         }
 

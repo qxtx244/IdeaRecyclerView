@@ -12,13 +12,13 @@ import android.support.v7.widget.RecyclerView;
  * @author QXTX-WIN
  * Description: 线性列表风格
  */
-public class Linear extends BaseStyle {
+public class LinearStyle extends BaseStyle {
 
-    public Linear(@NonNull Context context, @BaseStyle.Orientation int orientation) {
+    public LinearStyle(@NonNull Context context, @BaseStyle.Orientation int orientation) {
         this(context, orientation, false);
     }
 
-    public Linear(@NonNull Context context, @BaseStyle.Orientation int orientation, boolean isReverse) {
+    public LinearStyle(@NonNull Context context, @BaseStyle.Orientation int orientation, boolean isReverse) {
         super(context);
         setLayoutManager(new LinearLayoutManager(context, orientation, isReverse));
     }

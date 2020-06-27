@@ -12,13 +12,13 @@ import android.support.v7.widget.RecyclerView;
  * @author QXTX-WIN
  * Description: 网格列表风格
  */
-public class Grid extends BaseStyle {
+public class GridStyle extends BaseStyle {
 
-    public Grid(@NonNull Context context, int spanCount, @Orientation int orientation) {
+    public GridStyle(@NonNull Context context, int spanCount, @Orientation int orientation) {
         this(context, spanCount, orientation, false);
     }
 
-    public Grid(@NonNull Context context, int spanCount, @Orientation int orientation, boolean isReverse) {
+    public GridStyle(@NonNull Context context, int spanCount, @Orientation int orientation, boolean isReverse) {
         super(context);
         spanCount = spanCount < 1 ? 1 : spanCount;
         setLayoutManager(new GridLayoutManager(context, spanCount, orientation, isReverse));

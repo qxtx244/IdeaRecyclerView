@@ -8,9 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.qxtx.idea.idearecyclerview.item.ItemAction;
+import com.qxtx.idea.idearecyclerview.item.DefaultItemAction;
 import com.qxtx.idea.idearecyclerview.item.ItemLayoutFactory;
-import com.qxtx.idea.idearecyclerview.layoutmanager.Linear;
+import com.qxtx.idea.idearecyclerview.layoutmanager.LinearStyle;
 import com.qxtx.idea.idearecyclerview.tool.IdeaRvLog;
 import com.qxtx.idea.idearecyclerview.view.IdeaRecyclerView;
 import com.qxtx.idea.idearecyclerview.viewHolder.IdeaViewHolder;
@@ -36,32 +36,33 @@ public class DemoActivity extends AppCompatActivity {
 
         rvList = findViewById(R.id.rvList);
         IdeaRecyclerView<String>.Impl<String> impl = rvList.option(new TestLayoutFactory())
-                .setListStyle(new Linear(this, Linear.VER))
+                .setListStyle(new LinearStyle(this, LinearStyle.VER))
                 .setItemAction(new TestItemAction());
 
         Button btnAddListData = findViewById(R.id.btnAddListData);
-        btnAddListData.setOnClickListener(v ->  {
-            impl.setListData(listData);
-        });
+        btnAddListData.setOnClickListener(v -> impl.setListData(listData));
 
         Button btnChangeItemAction = findViewById(R.id.btnAddItemAction);
         btnChangeItemAction.setOnClickListener(v ->  {
             specItemSeq++;
-            rvList.addItem(3, "特殊项" + specItemSeq, R.layout.spec_item, (holder, data, itemPos) -> {
-                if (data == null) {
-                    return ;
-                }
+            rvList.addItem(3, "特殊项" + specItemSeq, R.layout.spec_item, new DefaultItemAction<String>() {
+                @Override
+                public void onItemBind(@NonNull IdeaViewHolder holder, @Nullable List<String> data, int itemPos) {
+                    if (data == null) {
+                        return ;
+                    }
 
-                TextView tvText = (TextView) holder.getViewById(R.id.tvText);
-                tvText.setText(data.get(itemPos));
+                    TextView tvText = (TextView) holder.getViewById(R.id.tvText);
+                    tvText.setText(data.get(itemPos));
+                }
             });
         });
     }
 
-    private final class TestItemAction implements ItemAction<String> {
+    private final class TestItemAction extends DefaultItemAction<String> {
 
         @Override
-        public void onItemAction(@NonNull IdeaViewHolder holder, @Nullable List<String> data, final int itemPos) {
+        public void onItemBind(@NonNull IdeaViewHolder holder, @Nullable List<String> data, final int itemPos) {
             if (data == null) {
                 return ;
             }
@@ -73,6 +74,16 @@ public class DemoActivity extends AppCompatActivity {
                 int pos = rvList.getChildAdapterPosition(v);
                 IdeaRvLog.TEST("点击了%s项", pos);
             });
+        }
+
+        @Override
+        public void onItemAttach() {
+
+        }
+
+        @Override
+        public void onItemDetach() {
+
         }
     }
 

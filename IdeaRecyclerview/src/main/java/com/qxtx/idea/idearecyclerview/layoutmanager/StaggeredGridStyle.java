@@ -12,9 +12,9 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
  * @author QXTX-WIN
  * Description: 瀑布流列表风格
  */
-public class StaggeredGrid extends BaseStyle {
+public class StaggeredGridStyle extends BaseStyle {
 
-    public StaggeredGrid(@NonNull Context context, int spanCount, @Orientation int orientation) {
+    public StaggeredGridStyle(@NonNull Context context, int spanCount, @Orientation int orientation) {
         super(context);
         spanCount = spanCount <= 0 ? 1 : spanCount;
 
