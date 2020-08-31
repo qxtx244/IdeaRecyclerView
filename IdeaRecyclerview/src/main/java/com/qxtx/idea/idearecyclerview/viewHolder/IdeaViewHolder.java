@@ -9,6 +9,7 @@ import com.qxtx.idea.idearecyclerview.tool.IdeaRvLog;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 
 /**
  * @author QXTX-WIN
@@ -19,12 +20,16 @@ public final class IdeaViewHolder extends RecyclerView.ViewHolder implements IVi
 
     private final View itemView;
 
+    /** 缓存item的view对象 */
+    private final HashMap<Integer, View> idMap;
+
     /**
      * @param item 父类构造方法不允许传入null，否则抛出异常。
      */
     public IdeaViewHolder(@NonNull View item) {
         super(item);
         itemView = item;
+        idMap = new HashMap<>();
     }
 
     @Override
@@ -62,7 +67,16 @@ public final class IdeaViewHolder extends RecyclerView.ViewHolder implements IVi
 
     @Override
     public View getViewById(int resId) {
-        return itemView.findViewById(resId);
+        View ret;
+        if (idMap.containsKey(resId)) {
+            return idMap.get(resId);
+        }
+
+        ret = itemView.findViewById(resId);
+        if (ret != null) {
+            idMap.put(resId, ret);
+        }
+        return ret;
     }
 
     @Override
