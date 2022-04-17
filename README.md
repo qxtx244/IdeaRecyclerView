@@ -60,7 +60,13 @@ IdeaRecyclerView
 + **setListStyle**  
   列表样式配置。内置GridStyle/LinearStyle/StaggeredGridStyle，
   可实现IStyle/BaseStyle来完成自定义配置
-+ **setItemAction**
++ **setItemAction**  
   列表项的行为描述，实现ItemAction<T>接口，以参数传入。
 
 `完全兼容RecyclerView的api`
+
+### **3. 混淆配置**
+如项目开启混淆，添加以下混淆规则：
+  ```
+  -keep class com.qxtx.idea.recyclerview.** {*;}
+  ```
