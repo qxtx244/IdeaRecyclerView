@@ -1,7 +1,5 @@
 IdeaRecyclerView
 =================
-    作者：QXTX-WIN
-    创建日期：2020年4月8日
 
 ## **概述**
 基于RecyclerView的二次封装，提供通用的Adapter，可以实现复杂的混合布局列表，更加直观的使用流程；  
@@ -10,16 +8,6 @@ IdeaRecyclerView
 
 ## **使用**
 ### **1. 导入工程**
-+ **aar包形式**（不推荐）
-  将aar包放到目标module的libs中，然后在目标module的build.gradle中，添加本地aar依赖：
-  ```
-  dependencies {
-      implementation fileTree(dir: 'libs', include: ['*.aar'])
-      //也可以用这种写法
-      implementation files('libs/aar文件名')
-  }
-  ```
-+ **依赖形式**  
   在目标module的build.gradle中：  
   添加maven仓库路径：
   ```
@@ -52,13 +40,27 @@ IdeaRecyclerView
    ```
    ```
    irvList
-     //配置入口api，提供布局配置
-     .option(ItemLayoutFactory)
-     //配置列表方向  
-     .setListStyle(IStyle)
-     //绑定列表数据  
-     .setListData(List<T>)
-     //列表中各个列表项的行为描述  
-     .setItemAction(ItemAction<T>);  
+     .option(ItemLayoutFactory)      //配置入口api，提供布局配置  
+     .setListStyle(IStyle)            //配置列表样式 
+     .setListData(List<T>)            //绑定列表数据  
+     .setItemAction(ItemAction<T>); //列表中各个列表项的行为描述
    ```
-同时，完全支持RecyclerView的api
++ **option**  
+   实现一个ItemLayoutFactory接口，以参数传入，如
+   ```
+   ItemLayoutFactory factory = pos -> {
+          switch (pos) {
+              case 1: return R.layotu.one;
+              case 2: return R.layout.two;
+              //...            
+              default: return R.layout.def;
+          }
+   };
+   ```
++ **setListStyle**  
+  列表样式配置。内置GridStyle/LinearStyle/StaggeredGridStyle，
+  可实现IStyle/BaseStyle来完成自定义配置
++ **setItemAction**
+  列表项的行为描述，实现ItemAction<T>接口，以参数传入。
+
+`完全兼容RecyclerView的api`
