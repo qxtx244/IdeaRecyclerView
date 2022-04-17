@@ -1,4 +1,4 @@
-package com.qxtx.idea.idearecyclerview.item;
+package com.qxtx.idea.recyclerview.item;
 
 /**
  * CreateDate 2020/6/25 13:03

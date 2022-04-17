@@ -1,19 +1,19 @@
-package com.qxtx.idea.idearecyclerviewDemo;
+package com.qxtx.idea.demo.idearecyclerview;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.qxtx.idea.idearecyclerview.item.DefaultItemAction;
-import com.qxtx.idea.idearecyclerview.item.ItemLayoutFactory;
-import com.qxtx.idea.idearecyclerview.layoutmanager.LinearStyle;
-import com.qxtx.idea.idearecyclerview.tool.IdeaRvLog;
-import com.qxtx.idea.idearecyclerview.view.IdeaRecyclerView;
-import com.qxtx.idea.idearecyclerview.viewHolder.IdeaViewHolder;
+import com.qxtx.idea.recyclerview.item.DefaultItemAction;
+import com.qxtx.idea.recyclerview.item.ItemLayoutFactory;
+import com.qxtx.idea.recyclerview.layoutmanager.LinearStyle;
+import com.qxtx.idea.recyclerview.tool.IdeaRvLog;
+import com.qxtx.idea.recyclerview.view.IdeaRecyclerView;
+import com.qxtx.idea.recyclerview.viewHolder.IdeaViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;

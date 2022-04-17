@@ -1,11 +1,11 @@
-package com.qxtx.idea.idearecyclerview.item;
+package com.qxtx.idea.recyclerview.item;
 
 import android.support.annotation.LayoutRes;
 
 /**
  * @author QXTX-WIN
  * @date 2020/4/18 18:22
- * Description: 支持多样式item布局工厂类，使用此类配合{@link com.qxtx.idea.idearecyclerview.view.IRecyclerView}
+ * Description: 支持多样式item布局工厂类，使用此类配合{@link com.qxtx.idea.recyclerview.view.IRecyclerView}
  *   完成复杂item布局的设计。
  *
  * @see DefaultLayoutFactory

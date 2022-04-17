@@ -1,4 +1,4 @@
-package com.qxtx.idea.idearecyclerview.adapter;
+package com.qxtx.idea.recyclerview.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -10,11 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.qxtx.idea.idearecyclerview.item.ItemAction;
-import com.qxtx.idea.idearecyclerview.item.ItemLayoutFactory;
-import com.qxtx.idea.idearecyclerview.tool.IdeaRvLog;
-import com.qxtx.idea.idearecyclerview.view.IdeaRecyclerView;
-import com.qxtx.idea.idearecyclerview.viewHolder.IdeaViewHolder;
+import com.qxtx.idea.recyclerview.item.ItemAction;
+import com.qxtx.idea.recyclerview.item.ItemLayoutFactory;
+import com.qxtx.idea.recyclerview.tool.IdeaRvLog;
+import com.qxtx.idea.recyclerview.view.IdeaRecyclerView;
+import com.qxtx.idea.recyclerview.viewHolder.IdeaViewHolder;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ import java.util.List;
  * @date 2020/4/15 23:34
  *
  * <pre>
- * Description: {@link com.qxtx.idea.idearecyclerview.view.IRecyclerView} 的适配器
+ * Description: {@link com.qxtx.idea.recyclerview.view.IRecyclerView} 的适配器
  *   此适配器可以适配大多数{@link RecyclerView}
  * @param <D> 数据集类型
  *

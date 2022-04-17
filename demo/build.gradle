@@ -1,14 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion compileSdkVer
+    compileSdkVersion 31
     defaultConfig {
-        applicationId "com.qxtx.idea.idearecyclerviewDemo"
-        minSdkVersion minSdkVer
-        targetSdkVersion targetSdkVer
-        versionCode modVersionCode
-        versionName modVersionName
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        applicationId "com.qxtx.idea.demo.idearecyclerview"
+        minSdkVersion 23
+        targetSdkVersion 28
+        versionCode 1
+        versionName '1.0.0'
     }
     buildTypes {
         release {
@@ -24,13 +23,9 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation appcompat_v7
+    implementation depts_support.appcompat
 
-    implementation 'com.android.support:recyclerview-v7:' + buildVersion
+    implementation depts_support.recyclerview
 
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation project(path: ':IdeaRecyclerview')
 }

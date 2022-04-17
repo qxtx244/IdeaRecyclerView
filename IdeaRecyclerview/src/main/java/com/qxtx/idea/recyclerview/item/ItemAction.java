@@ -1,9 +1,9 @@
-package com.qxtx.idea.idearecyclerview.item;
+package com.qxtx.idea.recyclerview.item;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.qxtx.idea.idearecyclerview.viewHolder.IdeaViewHolder;
+import com.qxtx.idea.recyclerview.viewHolder.IdeaViewHolder;
 
 import java.util.List;
 

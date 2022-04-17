@@ -1,4 +1,4 @@
-package com.qxtx.idea.idearecyclerview.layoutmanager;
+package com.qxtx.idea.recyclerview.layoutmanager;
 
 import android.content.Context;
 import android.support.annotation.IntDef;

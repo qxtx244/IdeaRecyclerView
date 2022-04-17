@@ -1,13 +1,10 @@
-package com.qxtx.idea.idearecyclerview.view;
+package com.qxtx.idea.recyclerview.view;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Pair;
 
-import com.qxtx.idea.idearecyclerview.adapter.IAdapter;
-import com.qxtx.idea.idearecyclerview.item.ItemAction;
-import com.qxtx.idea.idearecyclerview.item.ItemLayoutFactory;
+import com.qxtx.idea.recyclerview.adapter.IAdapter;
+import com.qxtx.idea.recyclerview.item.ItemAction;
+import com.qxtx.idea.recyclerview.item.ItemLayoutFactory;
 
 import java.util.List;
 

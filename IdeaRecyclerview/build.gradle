@@ -1,14 +1,14 @@
+import java.text.SimpleDateFormat
+
 apply plugin: 'com.android.library'
-//apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion compileSdkVer
 
     defaultConfig {
         minSdkVersion minSdkVer
-        targetSdkVersion targetSdkVer
-        versionCode appVersionCode
-        versionName appVersionName
+        versionCode 1
+        versionName '1.0.0'
 
         consumerProguardFiles 'consumer-rules.pro'
     }
@@ -16,24 +16,34 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility jdk8Ver
+        targetCompatibility jdk8Ver
+    }
+
+    libraryVariants.all { variant ->
+        variant.outputs.all { output ->
+            if (outputFileName.endsWith(".aar")) {
+                def currentTime = new SimpleDateFormat("yyyyMMddHHmm").format(new Date())
+                variant.getPackageLibrary().destinationDir =
+                        file("${parent.projectDir.absolutePath}\\out\\${variant.name}")
+                outputFileName = "${project.name}" +
+                        "_${android.defaultConfig.versionCode}" + "_${android.defaultConfig.versionName}" +
+                        "_${currentTime}" +
+                        "-${variant.name}.aar"
+            }
         }
     }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-    implementation appcompat_v7
-
-    implementation 'com.android.support:recyclerview-v7:' + buildVersion
+    implementation depts_support.appcompat
+    api depts_support.recyclerview
 }
 
-//publish {
-//    userOrg = '<userName>'    			//bintray.com用户名
-//    groupId = '<jcenterPath>'   		//jcenter上的路径
-//    artifactId = '<uri>'    			//自己的maven上添加的包名，可包含大写
-//    publishVersion = '<versionName>'    //版本号
-//    desc = '<description>'    			//描述
-//    website = '<website>'    			//网站，不重要
-//}
+ext.pomDesc = '一个封装的recyclerview库，提供通用的Adapter， 可以实现复杂的混合布局列表'
+apply from: androidMavenConfPath

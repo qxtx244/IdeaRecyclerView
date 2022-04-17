@@ -1,4 +1,4 @@
-package com.qxtx.idea.idearecyclerview.viewHolder;
+package com.qxtx.idea.recyclerview.viewHolder;
 
 import android.view.View;
 
@@ -8,7 +8,7 @@ import android.view.View;
  *
  * @author QXTX-WIN
  * Description: 列表项实现复用的接口。
- *   {@link com.qxtx.idea.idearecyclerview.view.IRecyclerView}的ViewHolder必须实现此接口
+ *   {@link com.qxtx.idea.recyclerview.view.IRecyclerView}的ViewHolder必须实现此接口
  *
  * @see IdeaViewHolder
  */

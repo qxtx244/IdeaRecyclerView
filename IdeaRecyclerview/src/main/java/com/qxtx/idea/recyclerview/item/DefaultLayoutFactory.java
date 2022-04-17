@@ -1,8 +1,8 @@
-package com.qxtx.idea.idearecyclerview.item;
+package com.qxtx.idea.recyclerview.item;
 
 import android.support.annotation.NonNull;
 
-import com.qxtx.idea.idearecyclerview.adapter.IdeaAdapter;
+import com.qxtx.idea.recyclerview.adapter.IdeaAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

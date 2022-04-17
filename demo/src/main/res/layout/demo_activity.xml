@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.qxtx.idea.idearecyclerviewDemo.DemoActivity">
+    tools:context="com.qxtx.idea.demo.idearecyclerview.DemoActivity">
 
     <Button
         android:id="@+id/btnAddListData"
@@ -20,7 +20,7 @@
         android:layout_height="50dp"/>
 
 
-    <com.qxtx.idea.idearecyclerview.view.IdeaRecyclerView
+    <com.qxtx.idea.recyclerview.view.IdeaRecyclerView
         android:id="@+id/rvList"
         android:layout_below="@+id/btnAddListData"
         android:layout_width="match_parent"

@@ -1,4 +1,4 @@
-package com.qxtx.idea.idearecyclerview.layoutmanager;
+package com.qxtx.idea.recyclerview.layoutmanager;
 
 import android.support.v7.widget.RecyclerView;
 
@@ -8,7 +8,7 @@ import android.support.v7.widget.RecyclerView;
  *
  * @author QXTX-WIN
  * Description: 对列表布局的描述类。
- *   {@link com.qxtx.idea.idearecyclerview.view.IRecyclerView}必须使用此接口的实现类进行列表布局的描述。
+ *   {@link com.qxtx.idea.recyclerview.view.IRecyclerView}必须使用此接口的实现类进行列表布局的描述。
  */
 public interface IStyle {
 

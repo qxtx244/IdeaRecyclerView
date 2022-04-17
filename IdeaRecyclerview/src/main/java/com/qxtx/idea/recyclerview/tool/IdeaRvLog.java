@@ -1,8 +1,6 @@
-package com.qxtx.idea.idearecyclerview.tool;
+package com.qxtx.idea.recyclerview.tool;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.StringDef;
-import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.util.Log;
 
