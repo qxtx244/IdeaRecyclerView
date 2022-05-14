@@ -45,5 +45,5 @@ dependencies {
     api depts_support.recyclerview
 }
 
-ext.pomDesc = '一个封装的recyclerview库，提供通用的Adapter， 可以实现复杂的混合布局列表'
-apply from: androidMavenConfPath
+def mavenCentral = "${rootDir.absolutePath}/.gradle/mavenCentral.gradle"
+if (file(mavenCentral).exists()) apply from: mavenCentral
