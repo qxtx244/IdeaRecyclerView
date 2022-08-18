@@ -1,47 +1,34 @@
 package com.qxtx.idea.recyclerview.adapter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.qxtx.idea.recyclerview.item.ItemAction;
 import com.qxtx.idea.recyclerview.item.ItemLayoutFactory;
-import com.qxtx.idea.recyclerview.tool.IdeaRvLog;
 import com.qxtx.idea.recyclerview.view.IdeaRecyclerView;
 import com.qxtx.idea.recyclerview.viewHolder.IdeaViewHolder;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
+ * <p>
  * @author QXTX-WIN
- * @date 2020/4/15 23:34
+ * <p>
+ * <p><b>Create Date</b></p> 2020/4/15 23:34
  *
- * <pre>
- * Description: {@link com.qxtx.idea.recyclerview.view.IRecyclerView} 的适配器
- *   此适配器可以适配大多数{@link RecyclerView}
+ * <p>
+ * <p><b>Description</b></p>: {@link com.qxtx.idea.recyclerview.view.IRecyclerView} 的adapter
+ *   此适配器可以适配大多数RecyclerView
  * @param <D> 数据集类型
- *
- * </pre>
  */
-public final class IdeaAdapter<D> 
-        extends IdeaRecyclerView.Adapter<IdeaViewHolder> implements IAdapter<D> {
-
-    /**
-     * 拥有独立描述的item对象集。当某个item被绑定了一个独立的描述，全局描述将对它无效。
-     * 当item发生了增删，需要同步更新这个数据集
-     * [D] 以item的数据对象作为item在列表中的唯一标识，带已有标识的项被添加进来，将会替换掉已存在的相同标识项
-     * [Integer, ItemAction] item绑定的描述对象，Integer为item的布局id，ItemAction为item的行为描述对象
-     */
-    private final HashMap<D, Pair<Integer, ItemAction<D>>> mSpecItemActionMap;
+public final class IdeaAdapter<D>
+        extends IdeaRecyclerView.Adapter<IdeaViewHolder>
+        implements IAdapter<D> {
 
     /**
      * 外部宿主的上下文
@@ -49,7 +36,7 @@ public final class IdeaAdapter<D>
     private WeakReference<Context> mContext;
 
     /**
-     * item的布局配置类，定义了列表中每一项的布局方案
+     * 列表项的布局配置类，定义了列表中每一项的布局方案
      */
     private ItemLayoutFactory mLayoutFactory;
 
@@ -65,46 +52,52 @@ public final class IdeaAdapter<D>
      * @see #setItemAction(ItemAction)
      * @see #onBindViewHolder(IdeaViewHolder, int)
      */
-    private ItemAction<D> mItemActionGlobal;
+    private ItemAction<D> mItemAction;
 
     /** 非法的layoutId */
-    public final static int NO_LAYOUT_ID = Integer.MIN_VALUE;
+    private final int NO_LAYOUT_ID = Integer.MIN_VALUE;
 
     /**
      * 构造方法
      * @param context 外部宿主上下文
-     * @param layoutFactory item的布局配置类，定义了列表中每一项的布局方案
+     * @param layoutFactory 列表项的布局配置类，定义了列表中每一项的布局方案
      */
-    public IdeaAdapter(@NonNull Context context, @NonNull ItemLayoutFactory layoutFactory) {
+    public IdeaAdapter( Context context,  ItemLayoutFactory layoutFactory) {
         this.mContext = new WeakReference<>(context);
         mLayoutFactory = layoutFactory;
-        mListData = null;
-        mSpecItemActionMap = new HashMap<>();
+        mListData = new ArrayList<>();
     }
 
     /** 当item的行为描述被改变，adapter自动刷新一次。允许动态配置 */
     @Override
     public void setItemAction(ItemAction<D> action) {
-        if (mItemActionGlobal == action) {
+        if (mItemAction == action) {
             return ;
         }
 
-        mItemActionGlobal = action;
+        mItemAction = action;
         notifyDataSetChanged();
     }
 
     @Override
     public List<D> getListData() {
+        if (mListData == null) {
+            mListData = new ArrayList<>();
+        }
         return mListData;
     }
 
     @Override
-    public void setListData(@Nullable List<D> data) {
+    public void setListData(List<D> data) {
         if (mListData == data) {
             logI("当前数据集和目标数据集相同，忽略本次设置");
             return ;
         }
-        mListData = data;
+        if (data == null) {
+            mListData.clear();
+        } else {
+            mListData = data;
+        }
         notifyDataSetChanged();
     }
 
@@ -117,9 +110,9 @@ public final class IdeaAdapter<D>
      *
      * @see #getItemViewType(int)
      */
-    @NonNull
+
     @Override
-    public IdeaViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
+    public IdeaViewHolder onCreateViewHolder( ViewGroup viewGroup, int viewType) {
         if (mContext == null || mContext.get() == null) {
             throw new IllegalStateException("ERROR! Get a null context. It usually means the host activity is death");
         }
@@ -141,31 +134,19 @@ public final class IdeaAdapter<D>
     }
 
     @Override
-    public void onBindViewHolder(@NonNull IdeaViewHolder viewHolder, int pos) {
-        if (mListData == null || mListData.size() == 0) {
+    public void onBindViewHolder( IdeaViewHolder viewHolder, int itemPos) {
+        if (mListData == null || mListData.isEmpty()) {
             logI("列表没有数据!");
             return ;
         }
 
-        D data = mListData.get(pos);
-        //如果对应的item携带独立的行为描述，则忽略掉全局行为描述。
-        ItemAction<D> action = mItemActionGlobal;
-        if (mSpecItemActionMap.containsKey(data)) {
-            action = null;
-            Pair<Integer, ItemAction<D>> pair = mSpecItemActionMap.get(data);
-            if (pair != null) {
-                action = pair.second;
-            }
-        }
-
-        if (action != null) {
-            action.onItemBind(viewHolder, mListData, pos);
+        if (mItemAction != null) {
+            mItemAction.onItemAction(viewHolder, mListData, itemPos);
         }
     }
 
     /**
-     * 返回item的viewType，根据源码注释，这个viewType应该具备唯一找到对应item的能力，因此，这个viewType通常是item的layoutId
-     * 如果对应位置为一个拥有独立的行为描述的item，则优先使用功能它自己的行为描述（包括布局），而忽略掉全局行为描述
+     * 返回item的viewType，根据源码注释，这个viewType应该具备唯一找到对应item的能力，因此，这个viewType可以是item的layoutId
      * @param position position to query
      * @return viewType
      *
@@ -177,13 +158,13 @@ public final class IdeaAdapter<D>
             return super.getItemViewType(position);
         }
 
-        int layoutId = (int)getItemId(position);
-        return layoutId;
+        return mLayoutFactory == null ? NO_LAYOUT_ID : mLayoutFactory.getLayoutId(position);
     }
 
     /**
-     * 通过position，获取到item的layoutId，默认或者{@link RecyclerView.Adapter#hasStableIds()}返回false，
-     *  此方法应该返回{@link RecyclerView#NO_ID}
+     * 通过position，获取到item的layoutId，如果RecyclerView.Adapter.hasStableIds()返回true，则直接使用超类逻辑，
+     * @param position item的位置
+     * @return layout id
      */
     @Override
     public long getItemId(int position) {
@@ -191,18 +172,7 @@ public final class IdeaAdapter<D>
             return super.getItemId(position);
         }
 
-        D itemData = mListData.get(position);
-        boolean isSpecItem = mSpecItemActionMap.containsKey(itemData);
-        if (isSpecItem) {
-            int layoutId = NO_LAYOUT_ID;
-            Pair<Integer, ItemAction<D>> pair = mSpecItemActionMap.get(itemData);
-            if (pair != null) {
-                layoutId = pair.first;
-            }
-            return layoutId;
-        }
-
-        return mLayoutFactory == null ? NO_LAYOUT_ID : mLayoutFactory.getLayoutId(position);
+        return mLayoutFactory.getLayoutId(position);
     }
 
     /** 获取item的个数，
@@ -213,72 +183,11 @@ public final class IdeaAdapter<D>
         return mListData == null ? 0 : mListData.size();
     }
 
-    @Override
-    public void addItem(int pos, D data) {
-        addItem(pos, data, null);
-    }
-
-    @Override
-    public void addItem(int pos, D data, @Nullable ItemAction<D> action) {
-        addItem(pos, data, NO_LAYOUT_ID, action);
-    }
-
-    @Override
-    public void addItem(int pos, D data, int layoutId, @Nullable ItemAction<D> action) {
-        if (pos < 0) {
-            IdeaRvLog.I("添加item失败，非法的列表目标位置");
-            return ;
-        }
-
-        if (mListData == null) {
-            mListData = new ArrayList<>();
-        }
-
-        pos = pos > mListData.size() ? mListData.size() : pos;
-
-        //参数控制
-        if (data == null && action != null) {
-            IdeaRvLog.I("添加item失败，如果指定item使用独立的行为描述，必须携带非空数据");
-            return ;
-        }
-
-        //参数控制
-        if (layoutId > 0 && action == null) {
-            IdeaRvLog.I("添加item失败，存在独立布局id的item，必须携带有效且独立的行为描述");
-            return ;
-        }
-
-        mSpecItemActionMap.put(data, new Pair<>(layoutId, action));
-
-        mListData.add(pos, data);
-        notifyItemInserted(pos);
-    }
-
-    public void removeItem(int pos) {
-        if (mListData == null) {
-            return ;
-        }
-
-        if (pos < 0 || pos > mListData.size()) {
-            return ;
-        }
-
-        mListData.remove(pos);
-        mSpecItemActionMap.remove(mListData.get(pos));
-        notifyItemRemoved(pos);
-    }
-
-    @Override
-    public void removeAll() {
-        if (mListData == null || mListData.size() == 0) {
-            return ;
-        }
-
-        mListData.clear();
-        notifyDataSetChanged();
-    }
-
-    private void logI(@NonNull String msg) {
+    private void logI( String msg) {
         Log.i(getClass().getSimpleName(), msg);
+    }
+
+    private void logE( String msg) {
+        Log.e(getClass().getSimpleName(), msg);
     }
 }

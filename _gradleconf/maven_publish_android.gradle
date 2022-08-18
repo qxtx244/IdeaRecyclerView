@@ -1,6 +1,6 @@
 
 /**
- * laiyx: 发布到maven仓库的实现，适用于android library，java/groovy library请使用maven_upload_java.gradle
+ *  发布到maven仓库的实现，适用于android library，java/groovy library请使用maven_upload_java.gradle
  *
  * 配置方法：
  * 1. 在目标module的build.gradle中添加代码：

@@ -2,130 +2,120 @@ package com.qxtx.idea.recyclerview.view;
 
 import android.content.Context;
 import android.os.Looper;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.view.View;
 
-import com.qxtx.idea.recyclerview.adapter.IAdapter;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.qxtx.idea.recyclerview.adapter.IdeaAdapter;
 import com.qxtx.idea.recyclerview.item.ItemAction;
 import com.qxtx.idea.recyclerview.item.ItemLayoutFactory;
 import com.qxtx.idea.recyclerview.layoutmanager.IStyle;
 import com.qxtx.idea.recyclerview.tool.IdeaRvLog;
+import com.qxtx.idea.recyclerview.viewHolder.IdeaViewHolder;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /**
+ * <p>
  * @author QXTX-WIN
- * @date 2020/4/15 23:32
- * Description: 对{@link RecyclerView}的二次封装，使用起来更加方便
+ * <p>
+ * <p><b>Create Date</b></p> 2020/4/15 23:32
+ * <p>
+ * <p><b>Description</b></p>: 对RecyclerView的二次封装，使用起来更加方便
  * @param <D> 数据集类型
  *
- * 只能存在一条路径去配置，即通过一个固定的方法作为入口，创建内部实现类，由这个实现类去完成真正的配置工作
+ * <pre>
+ *   存在仅此一条路径去配置，即通过一个固定的方法作为入口，创建内部实现类，由这个实现类去完成真正的配置工作
  *
- * 一些开源的RecyclerView的LayoutManager：
- *      1、FanLayoutManager：https://github.com/Cleveroad/FanLayoutManager 扇叶转动
- *      2、CarouselLayoutManager：https://github.com/Azoft/CarouselLayoutManager 传送带（卡片轮播）效果
- *      3、ChipsLayoutManager：https://github.com/BelooS/ChipsLayoutManager 流式布局效果（标签云）
- *      4、HiveLayoutManager：https://github.com/Chacojack/HiveLayoutManager 蜂巢效果（国人作品）
- *      5、vLayout：https://github.com/alibaba/vlayout 布局混排效果（天猫app所使用）
- *      6、flexbox-layout https://github.com/google/flexbox-layout flexbox效果（谷歌的东西，原本不支持recyclerView）
- *      7、LondonEyeLayoutManager https://github.com/danylovolokh/LondonEyeLayoutManager 环形菜单效果
+ *   配置实现：
+ *       1. xml布局中使用此自定义控件
+ *       2. 在得到View实例后，通过{@link #option(ItemLayoutFactory)}方法得到配置实现对象
+ *       3. 调用其它如{@link Impl#setListData(List)}、{@link Impl#setItemAction(ItemAction)}
+ *          和 {@link Impl#setListStyle(IStyle)}等配置方法
+ * </pre>
+ *
+ * <em>
+ *   附：多布局列表的实现
+ *       通过{@link ItemLayoutFactory}对象，随着item的增删而动态的增删或选择性返回指定布局id，完成各种item布局的指定。
+ *       需要注意的是，需要注意item的行为描述（即{@link ItemAction}中的行为）因此布局的变更而可能受到的影响。
+ * </em>
  */
 public class IdeaRecyclerView<D> extends RecyclerView implements IRecyclerView<D> {
-
-    private PreConfig preConfig;
 
     private Impl<D> mImpl;
 
     private Context mContext;
 
-    public IdeaRecyclerView(@NonNull Context context) {
+    public IdeaRecyclerView( Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context);
+    }
+
+    public IdeaRecyclerView( Context context) {
         super(context);
-        init(context, null, -1);
+        init(context);
     }
 
-    public IdeaRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs) {
-        this(context, attrs, -1);
-    }
-
-    public IdeaRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyle) {
+    public IdeaRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init(context, attrs, defStyle);
+        init(context);
     }
 
     /**
-     * 在构造方法中做初始化操作，获取xml中预设的一些属性
+     * 在构造方法中做初始化操作
      * @see IdeaRecyclerView#IdeaRecyclerView
      */
-    private void init(@NonNull Context context, @Nullable AttributeSet attrs, int defStyle) {
+    private void init( Context context) {
         mContext = context;
-        if (attrs == null) {
-            return ;
-        }
     }
 
     /** 对列表进行参数配置 */
-    public Impl<D> option(@NonNull ItemLayoutFactory factory) {
-        if (mImpl == null) {
-            mImpl = new Impl<>(factory);
-        }
-
+    public Impl<D> option( ItemLayoutFactory factory) {
+        mImpl = new Impl<>(factory);
         return mImpl;
     }
 
     @Override
-    public void addItem(int pos, D data) {
-        addItem(pos, data, null);
-    }
-
-    @Override
-    public void addItem(int pos, D data, @Nullable ItemAction<D> action) {
-        addItem(pos, data, IdeaAdapter.NO_LAYOUT_ID, action);
-    }
-
-    @Override
-    public void addItem(int pos, D data, int layoutId, ItemAction<D> action) {
-        mImpl.addItem(pos, data, layoutId, action);
-    }
-
-    @Override
-    public void removeItem(int pos) {
-        mImpl.removeItem(pos);
-    }
-
-    @Override
     public List<D> getListData() {
-        return mImpl.getListData();
-    }
-
-    @Override
-    public IAdapter<D> getIdeaAdapter() {
         Adapter adapter = getAdapter();
-        if ((adapter instanceof IAdapter)) {
-            return (IAdapter<D>) adapter;
+        if (adapter instanceof IdeaAdapter) {
+            IdeaAdapter<D> ideaAdapter = (IdeaAdapter<D>)adapter;
+            return ideaAdapter.getListData();
         }
-        return null;
+        throw new UnsupportedOperationException("此方法对当前的列表控件不可用");
     }
 
     @UiThread
     @Override
     public void refresh() {
         if (!isUiThread()) {
+            IdeaRvLog.I("非UI线程不允许刷新列表操作");
             return ;
         }
 
         Adapter adapter = getAdapter();
         if (adapter != null) {
+            if (adapter instanceof IdeaAdapter) {
+                List<D> listData = getListData();
+                int itemCount = listData == null ? 0 : listData.size();
+                IdeaRvLog.I("当前数据列表项个数：" + itemCount);
+            }
             adapter.notifyDataSetChanged();
         } else {
             IdeaRvLog.I("无法刷新");
         }
+    }
+
+    @UiThread
+    public void addItem(D data) {
+        post(() -> {
+            mImpl.mAdapter.getListData().add(data);
+            mImpl.mAdapter.notifyItemInserted(mImpl.mAdapter.getListData().size());
+        });
     }
 
     /**
@@ -135,8 +125,8 @@ public class IdeaRecyclerView<D> extends RecyclerView implements IRecyclerView<D
      */
     @UiThread
     @Override
-    public void removeAll() {
-        mImpl.removeAll();
+    public void removeAllItem() {
+        mImpl.setListData(null);
     }
 
     /**
@@ -145,18 +135,30 @@ public class IdeaRecyclerView<D> extends RecyclerView implements IRecyclerView<D
      */
     @Override
     public void setLayoutManager(final LayoutManager layout) {
-        LayoutManager layoutManager = layout;
-        if (mImpl != null) {
-            IStyle style = new IStyle() {
+        LayoutManager lm = null;
+        if (mImpl == null) {
+            lm = layout;
+        } else {
+            mImpl.mStyle = new IStyle() {
                 @Override
                 public LayoutManager getLayoutManager() {
                     return layout;
                 }
             };
-            mImpl.mStyle = style;
-            layoutManager = style.getLayoutManager();
+            lm = mImpl.mStyle.getLayoutManager();
         }
-        super.setLayoutManager(layoutManager);
+
+        super.setLayoutManager(lm);
+    }
+
+    @Override
+    public IdeaViewHolder getIdeaViewHolder(@NonNull View child) {
+        return (IdeaViewHolder) getChildViewHolder(child);
+    }
+
+    @Nullable
+    public IdeaAdapter<D> getIdeaAdapter() {
+        return (IdeaAdapter<D>)super.getAdapter();
     }
 
     /**
@@ -168,17 +170,9 @@ public class IdeaRecyclerView<D> extends RecyclerView implements IRecyclerView<D
         super.setAdapter(adapter);
     }
 
-    private boolean isUiThread() {
-        boolean ret = Looper.myLooper() != null && Looper.myLooper() == Looper.getMainLooper();
-        if (!ret) {
-            IdeaRvLog.E("无法在非主线程中操作列表界面！");
-        }
-
-        return ret;
-    }
-
     /**
      * 内部配置类
+     * 注意，此类的成员变量仅为配置{@link IdeaRecyclerView<>}而存在
      * @param <V> 数据集类型，实际上等效于{@link #<D>}，仅仅是为了方便区分两者
      */
     public final class Impl<V extends D> {
@@ -189,12 +183,8 @@ public class IdeaRecyclerView<D> extends RecyclerView implements IRecyclerView<D
         /** 列表适配器 */
         private final IdeaAdapter<V> mAdapter;
 
-        private Impl(@NonNull ItemLayoutFactory factory) {
+        private Impl( ItemLayoutFactory factory) {
             mStyle = null;
-
-            //默认不使用列表项动画效果
-            setItemAnimator(null);
-
             mAdapter = new IdeaAdapter<V>(mContext, factory);
             setAdapter(mAdapter);
         }
@@ -203,7 +193,7 @@ public class IdeaRecyclerView<D> extends RecyclerView implements IRecyclerView<D
          * 设置列表的布局样式
          * @param style 列表样式对象
          */
-        public Impl<V> setListStyle(@NonNull IStyle style) {
+        public Impl<V> setListStyle( IStyle style) {
             mStyle = style;
             setLayoutManager(mStyle.getLayoutManager());
             return this;
@@ -234,69 +224,14 @@ public class IdeaRecyclerView<D> extends RecyclerView implements IRecyclerView<D
         public IStyle getListStyle() {
             return mStyle;
         }
-
-        private List<V> getListData() {
-            return mAdapter.getListData();
-        }
-
-        private void addItem(int pos, V data) {
-            addItem(pos, data, null);
-        }
-
-        private void addItem(int pos, V data, @Nullable ItemAction<V> action) {
-            addItem(pos, data, IdeaAdapter.NO_LAYOUT_ID, action);
-        }
-
-        private void addItem(int pos, V data, int layoutId, ItemAction<V> action) {
-            mAdapter.addItem(pos, data, layoutId, action);
-        }
-
-        private void removeItem(int pos) {
-            mAdapter.removeItem(pos);
-        }
-
-        private void removeAll() {
-            mAdapter.removeAll();
-        }
     }
 
-    /**
-     * xml中预设的属性
-     * @see #init(Context, AttributeSet, int)
-     */
-    private static final class PreConfig {
-
-        @Retention(RetentionPolicy.SOURCE)
-        private @interface ListStyle {
-            int STYLE_LINEAR = 1;
-            int STYLE_GRID = 2;
-            int STYLE_STAGGERED_GRID = 3;
+    private boolean isUiThread() {
+        boolean ret = Looper.myLooper() != null && Looper.myLooper() == Looper.getMainLooper();
+        if (!ret) {
+            IdeaRvLog.E("无法在非主线程中操作列表界面！");
         }
 
-        /** item布局id */
-        private @LayoutRes int itemLayoutId;
-
-        /** 列表样式 */
-        private @ListStyle int listStyle;
-
-//        /** 边缘效果动画 */
-//        private int edgeEffectAnim;
-
-
-        public int getItemLayoutId() {
-            return itemLayoutId;
-        }
-
-        public void setItemLayoutId(int itemLayoutId) {
-            this.itemLayoutId = itemLayoutId;
-        }
-
-        public int getListStyle() {
-            return listStyle;
-        }
-
-        public void setListStyle(int listStyle) {
-            this.listStyle = listStyle;
-        }
+        return ret;
     }
 }

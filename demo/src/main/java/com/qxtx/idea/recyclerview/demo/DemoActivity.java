@@ -1,17 +1,15 @@
 package com.qxtx.idea.recyclerview.demo;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
-import com.qxtx.idea.demo.idearecyclerview.R;
-import com.qxtx.idea.recyclerview.item.DefaultItemAction;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.qxtx.idea.recyclerview.demo.databinding.DemoActivityBinding;
+import com.qxtx.idea.recyclerview.item.ItemAction;
 import com.qxtx.idea.recyclerview.item.ItemLayoutFactory;
-import com.qxtx.idea.recyclerview.layoutmanager.LinearStyle;
+import com.qxtx.idea.recyclerview.layoutmanager.Linear;
 import com.qxtx.idea.recyclerview.tool.IdeaRvLog;
 import com.qxtx.idea.recyclerview.view.IdeaRecyclerView;
 import com.qxtx.idea.recyclerview.viewHolder.IdeaViewHolder;
@@ -21,49 +19,39 @@ import java.util.List;
 
 public class DemoActivity extends AppCompatActivity {
 
-    private IdeaRecyclerView<String> rvList;
-
-    private int specItemSeq;
+    private DemoActivityBinding binding = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.demo_activity);
+        binding = DemoActivityBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         ArrayList<String> listData = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 20; i++) {
             listData.add("item " + i);
         }
 
-        rvList = findViewById(R.id.rvList);
-        IdeaRecyclerView<String>.Impl<String> impl = rvList.option(new TestLayoutFactory())
-                .setListStyle(new LinearStyle(this, LinearStyle.VER))
+        Linear listStyle = new Linear(this, Linear.VER);
+        IdeaRecyclerView<String>.Impl<String> impl = binding.rvList.option(new TestLayoutFactory())
+                .setListStyle(listStyle)
                 .setItemAction(new TestItemAction());
 
-        Button btnAddListData = findViewById(R.id.btnAddListData);
-        btnAddListData.setOnClickListener(v -> impl.setListData(listData));
+        binding.btnAddListData.setOnClickListener(v -> impl.setListData(listData));
 
-        Button btnChangeItemAction = findViewById(R.id.btnAddItemAction);
-        btnChangeItemAction.setOnClickListener(v ->  {
-            specItemSeq++;
-            rvList.addItem(3, "特殊项" + specItemSeq, R.layout.spec_item, new DefaultItemAction<String>() {
-                @Override
-                public void onItemBind(@NonNull IdeaViewHolder holder, @Nullable List<String> data, int itemPos) {
-                    if (data == null) {
-                        return ;
-                    }
-
-                    TextView tvText = (TextView) holder.getViewById(R.id.tvText);
-                    tvText.setText(data.get(itemPos));
-                }
-            });
+        binding.btnScrollControl.setOnClickListener(v -> {
+            boolean scrollEnable = v.getTag() != null && (boolean) v.getTag();
+            listStyle.setScrollEnable(scrollEnable);
+            String state = scrollEnable ? "禁用" : "启用";
+            binding.btnScrollControl.setText(String.format("列表滚动已%s", state));
+            v.setTag(!scrollEnable);
         });
     }
 
-    private final class TestItemAction extends DefaultItemAction<String> {
+    private final class TestItemAction implements ItemAction<String> {
 
         @Override
-        public void onItemBind(@NonNull IdeaViewHolder holder, @Nullable List<String> data, final int itemPos) {
+        public void onItemAction(IdeaViewHolder holder, List<String> data, int itemPos) {
             if (data == null) {
                 return ;
             }
@@ -72,19 +60,9 @@ public class DemoActivity extends AppCompatActivity {
             tvText.setText(data.get(itemPos));
 
             holder.setItemListener((View.OnClickListener) v -> {
-                int pos = rvList.getChildAdapterPosition(v);
-                IdeaRvLog.TEST("点击了%s项", pos);
+                int pos = binding.rvList.getChildAdapterPosition(v);
+                IdeaRvLog.D(String.format("点击了%s项", pos));
             });
-        }
-
-        @Override
-        public void onItemAttach() {
-
-        }
-
-        @Override
-        public void onItemDetach() {
-
         }
     }
 

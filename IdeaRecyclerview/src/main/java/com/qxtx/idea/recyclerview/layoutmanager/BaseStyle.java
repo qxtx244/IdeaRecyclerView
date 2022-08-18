@@ -1,10 +1,10 @@
 package com.qxtx.idea.recyclerview.layoutmanager;
 
 import android.content.Context;
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.annotation.IntDef;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -14,8 +14,10 @@ import java.lang.ref.WeakReference;
  * CreateDate 2020/4/22 22:23
  * <p>
  *
+ * <p>
  * @author QXTX-WIN
- * Description: 列表风格基类，建议{@link IStyle}的实现类继承此基类，而不是直接实现{@link IStyle}接口。默认是垂直方向的线性布局样式
+ * <p>
+ * <p><b>Description</b></p>: 列表风格基类，建立{@link IStyle}的实现类继承此基类，而不是直接实现{@link IStyle}接口
  */
 public abstract class BaseStyle implements IStyle {
 
@@ -26,7 +28,7 @@ public abstract class BaseStyle implements IStyle {
     protected RecyclerView.LayoutManager mLayoutManager;
 
     /**
-     * 线性列表布局方向，等同于{@link LinearLayoutManager#HORIZONTAL} 和 {@link LinearLayoutManager#VERTICAL}。
+     * 线性列表布局方向，等同于LinearLayoutManager#HORIZONTAL 和 LinearLayoutManager#VERTICAL。
      * @see LinearLayoutManager
      */
     @Retention(RetentionPolicy.SOURCE)
@@ -39,14 +41,14 @@ public abstract class BaseStyle implements IStyle {
     /** 垂直方向 */
     public static final int VER = LinearLayoutManager.VERTICAL;
 
-    protected BaseStyle(@NonNull Context context) {
+    protected BaseStyle(Context context) {
         mContextWeak = new WeakReference<>(context);
-        mLayoutManager = new LinearLayoutManager(context, VER, false);
+        mLayoutManager = null;
     }
 
     @Override
-    public RecyclerView.LayoutManager getLayoutManager() {
-        return mLayoutManager;
+    public <T extends RecyclerView.LayoutManager>T getLayoutManager() {
+        return (T)mLayoutManager;
     }
 
     protected void setLayoutManager(RecyclerView.LayoutManager layoutManager) {

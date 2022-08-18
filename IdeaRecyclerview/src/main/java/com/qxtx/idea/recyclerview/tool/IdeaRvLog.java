@@ -1,8 +1,9 @@
 package com.qxtx.idea.recyclerview.tool;
 
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
+
+import com.qxtx.idea.recyclerview.BuildConfig;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -11,14 +12,16 @@ import java.lang.annotation.RetentionPolicy;
  * CreateDate 2020/4/19 13:41
  * <p>
  *
+ * <p>
  * @author QXTX-WIN
- * Description: 快速日志打印类
+ * <p>
+ * <p><b>Description</b></p>: 快速日志打印类
  */
 public class IdeaRvLog {
     
     public static String TAG = "IdeaRvLog";
 
-    private static boolean logEnable = true;
+    private static boolean logEnable = BuildConfig.DEBUG;
 
     private static String tag = TAG;
 
@@ -31,38 +34,30 @@ public class IdeaRvLog {
         String TYPE_WTF = "WTF";
     }
 
-    public static void setEnable(boolean enable) {
-        logEnable = enable;
-    }
-
-    public static void setTag(String tag) {
-        IdeaRvLog.tag = TextUtils.isEmpty(tag) ? "" : tag;
-    }
-
     private final static StringBuilder sb = new StringBuilder();
     
-    public static void D(@NonNull String... msgArray) {
+    public static void D( String... msgArray) {
         log("D", msgArray);
     }
 
-    public static void I(@NonNull String... msgArray) {
+    public static void I( String... msgArray) {
         log("I", msgArray);
     }
 
-    public static void W(@NonNull String... msgArray) {
+    public static void W( String... msgArray) {
         log("W", msgArray);
     }
 
-    public static void E(@NonNull String... msgArray) {
+    public static void E( String... msgArray) {
         log("E", msgArray);
     }
 
-    public static void WTF(@NonNull String... msgArray) {
+    public static void WTF( String... msgArray) {
         log("WTF", msgArray);
     }
 
     private static void log(@LogType String type, String... msgArray) {
-        if (!logEnable) {
+        if (!logEnable && !type.equals(LogType.TYPE_E) && !type.equals(LogType.TYPE_WTF)) {
             return ;
         }
 
@@ -95,9 +90,5 @@ public class IdeaRvLog {
                 break;
         }
 
-    }
-
-    public static void TEST(String msg, Object...param){
-        Log.e(msg, param[0].toString());
     }
 }

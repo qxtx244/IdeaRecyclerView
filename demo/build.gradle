@@ -1,13 +1,18 @@
 apply plugin: 'com.android.application'
 
 android {
+
+    viewBinding {
+        enabled true
+    }
+
     compileSdkVersion 31
     defaultConfig {
         applicationId "com.qxtx.idea.demo.idearecyclerview"
         minSdkVersion 23
         targetSdkVersion 28
         versionCode 1
-        versionName '1.0.0'
+        versionName '1.0.1'
     }
     buildTypes {
         release {
@@ -22,10 +27,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation depts_support.appcompat
-
-    implementation depts_support.recyclerview
+    implementation 'androidx.appcompat:appcompat:' + versions.appcompat
 
     implementation project(path: ':IdeaRecyclerview')
 }

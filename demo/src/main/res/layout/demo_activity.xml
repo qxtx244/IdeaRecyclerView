@@ -4,20 +4,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.qxtx.idea.demo.idearecyclerview.com.qxtx.idea.recyclerview.demo.DemoActivity">
+    android:padding="5dp"
+    tools:context="com.qxtx.idea.recyclerview.demo.DemoActivity">
+
+    <View
+        android:id="@+id/centerView"
+        android:layout_centerHorizontal="true"
+        android:layout_width="5dp"
+        android:layout_height="1dp"/>
 
     <Button
         android:id="@+id/btnAddListData"
         android:text="添加数据"
-        android:layout_width="100dp"
-        android:layout_height="50dp"/>
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_toStartOf="@+id/centerView"/>
 
     <Button
-        android:id="@+id/btnAddItemAction"
-        android:text="添加行为"
+        android:id="@+id/btnScrollControl"
+        android:text="滚动已被允许"
         android:layout_toRightOf="@+id/btnAddListData"
-        android:layout_width="100dp"
-        android:layout_height="50dp"/>
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_toEndOf="@+id/centerView"/>
 
 
     <com.qxtx.idea.recyclerview.view.IdeaRecyclerView
