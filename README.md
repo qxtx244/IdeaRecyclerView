@@ -72,7 +72,7 @@ IdeaRecyclerView
   View v = holder.getViewById(id); 
   ```
   IdeaViewHolder会缓存列表项中的控件对象，因此可以有效地避免使用findViewById()带来的重复遍历查找行为。
-+ **启用/禁用列表滚动**
++ **启用/禁用列表滚动**  
   如果使用了Linear对象作为列表风格，则支持主动控制列表可滚动状态，Linear将自动判断或定位到可用的滚动方向（线性列表只有一个滚动方向）
   ```
   Linear linear = new Linear(context, Linear.VER|Linear.HOR);
@@ -83,6 +83,17 @@ IdeaRecyclerView
   //...
   linear.setScrollEnable(true|false);
   ```
++ **监听列表项的绑定/解绑**
+  ```
+  irvList.addIdeaChildAttachStateListener(new IAttachStateChangeListener {
+        @Override
+        public void onChildAttach(View v, int pos, D data) {}
+        
+        @Override
+        public void onChildDetach(View v, int pos, D data) {}            
+  });
+  ```
+  这和RecyclerView内置的OnChildAttachStateChangeListener不同的是，回调方法携带了更实用的参数。
 
 ### **3. 混淆配置**
 如项目开启混淆，添加以下混淆规则：

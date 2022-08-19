@@ -5,6 +5,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import com.qxtx.idea.recyclerview.adapter.IdeaAdapter;
+import com.qxtx.idea.recyclerview.listener.IAttachStateChangeListener;
 import com.qxtx.idea.recyclerview.viewHolder.IdeaViewHolder;
 
 import java.util.List;
@@ -21,6 +22,18 @@ import java.util.List;
  * @see IdeaRecyclerView
  */
 public interface IRecyclerView<D> {
+
+    /**
+     * 添加列表项绑定/解绑事件监听器
+     * @param listener
+     */
+    void addIdeaChildAttachStateListener(IAttachStateChangeListener<D> listener);
+
+    /**
+     * 移除列表项绑定/解绑事件监听器
+     * @param listener
+     */
+    void removeIdeaChildAttachStateListener(IAttachStateChangeListener<D> listener);
 
     /**
      * 获取封装的ViewHolder对象

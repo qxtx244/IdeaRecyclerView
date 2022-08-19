@@ -10,6 +10,7 @@ import com.qxtx.idea.recyclerview.demo.databinding.DemoActivityBinding;
 import com.qxtx.idea.recyclerview.item.ItemAction;
 import com.qxtx.idea.recyclerview.item.ItemLayoutFactory;
 import com.qxtx.idea.recyclerview.layoutmanager.Linear;
+import com.qxtx.idea.recyclerview.listener.IAttachStateChangeListener;
 import com.qxtx.idea.recyclerview.tool.IdeaRvLog;
 import com.qxtx.idea.recyclerview.view.IdeaRecyclerView;
 import com.qxtx.idea.recyclerview.viewHolder.IdeaViewHolder;
@@ -28,14 +29,30 @@ public class DemoActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         ArrayList<String> listData = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            listData.add("item " + i);
+        for (int i = 0; i < 30; i++) {
+            if (i > 2) {
+                listData.add("item " + i);
+            } else {
+                listData.add(null);
+            }
         }
 
         Linear listStyle = new Linear(this, Linear.VER);
         IdeaRecyclerView<String>.Impl<String> impl = binding.rvList.option(new TestLayoutFactory())
                 .setListStyle(listStyle)
                 .setItemAction(new TestItemAction());
+
+        binding.rvList.addIdeaChildAttachStateListener(new IAttachStateChangeListener() {
+            @Override
+            public void onChildAttach(View v, int pos, Object data) {
+                IdeaRvLog.D(String.format("列表项%s绑定到列表", pos));
+            }
+
+            @Override
+            public void onChildDetach(View v, int pos, Object data) {
+                IdeaRvLog.D(String.format("列表项%s从列表解绑", pos));
+            }
+        });
 
         binding.btnAddListData.setOnClickListener(v -> impl.setListData(listData));
 

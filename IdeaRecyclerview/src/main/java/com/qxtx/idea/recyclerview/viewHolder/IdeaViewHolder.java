@@ -3,7 +3,6 @@ package com.qxtx.idea.recyclerview.viewHolder;
 import android.os.Looper;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.qxtx.idea.recyclerview.tool.IdeaRvLog;
@@ -48,7 +47,7 @@ public final class IdeaViewHolder extends RecyclerView.ViewHolder implements IVi
     }
 
     @Override
-    public void setItemListener(@Nullable Object listener) {
+    public void setItemListener(Object listener) {
         String clsName = null;
         if (listener != null) {
             clsName = parseListenerObj(listener);

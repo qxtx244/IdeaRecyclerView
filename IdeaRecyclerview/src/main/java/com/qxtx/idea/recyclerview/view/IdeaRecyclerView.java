@@ -14,9 +14,11 @@ import com.qxtx.idea.recyclerview.adapter.IdeaAdapter;
 import com.qxtx.idea.recyclerview.item.ItemAction;
 import com.qxtx.idea.recyclerview.item.ItemLayoutFactory;
 import com.qxtx.idea.recyclerview.layoutmanager.IStyle;
+import com.qxtx.idea.recyclerview.listener.IAttachStateChangeListener;
 import com.qxtx.idea.recyclerview.tool.IdeaRvLog;
 import com.qxtx.idea.recyclerview.viewHolder.IdeaViewHolder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,6 +48,8 @@ import java.util.List;
  */
 public class IdeaRecyclerView<D> extends RecyclerView implements IRecyclerView<D> {
 
+    private final ArrayList<IAttachStateChangeListener<D>> stateChangeListeners = new ArrayList<>();
+
     private Impl<D> mImpl;
 
     private Context mContext;
@@ -69,8 +73,38 @@ public class IdeaRecyclerView<D> extends RecyclerView implements IRecyclerView<D
      * 在构造方法中做初始化操作
      * @see IdeaRecyclerView#IdeaRecyclerView
      */
-    private void init( Context context) {
+    private void init(Context context) {
         mContext = context;
+
+        addOnChildAttachStateChangeListener(new OnChildAttachStateChangeListener() {
+            @Override
+            public void onChildViewAttachedToWindow(@NonNull View view) {
+                int index = getChildAdapterPosition(view);
+                D data = null;
+                if (index >= 0) {
+                    data = getListData().get(index);
+                }
+
+                for (IAttachStateChangeListener<D> listener :
+                        stateChangeListeners.toArray(new IAttachStateChangeListener[0])) {
+                    listener.onChildAttach(view, index, data);
+                }
+            }
+
+            @Override
+            public void onChildViewDetachedFromWindow(@NonNull View view) {
+                int index = getChildAdapterPosition(view);
+                D data = null;
+                if (index >= 0) {
+                    data = getListData().get(index);
+                }
+
+                for (IAttachStateChangeListener<D> listener :
+                        stateChangeListeners.toArray(new IAttachStateChangeListener[0])) {
+                    listener.onChildDetach(view, index, data);
+                }
+            }
+        });
     }
 
     /** 对列表进行参数配置 */
@@ -149,6 +183,18 @@ public class IdeaRecyclerView<D> extends RecyclerView implements IRecyclerView<D
         }
 
         super.setLayoutManager(lm);
+    }
+
+    @Override
+    public void addIdeaChildAttachStateListener(IAttachStateChangeListener<D> listener) {
+        if (!stateChangeListeners.contains(listener)) {
+            stateChangeListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeIdeaChildAttachStateListener(IAttachStateChangeListener<D> listener) {
+        stateChangeListeners.remove(listener);
     }
 
     @Override
